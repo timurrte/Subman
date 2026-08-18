@@ -15,7 +15,6 @@ public class CommandManager<T extends CommandHandler> {
 		LiteralArgumentBuilder<CommandSourceStack> root = Commands.literal(rootCommand);
 	    SubmanPlugin.getInstance().getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event -> {
 	    	event.registrar().register(
-	    			root,
 	    			commandClassInstance.getNode(),
 	    			"Opens the server shop menu",
 	    			java.util.List.of("sh", "sell", "ah")
