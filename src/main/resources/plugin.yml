@@ -1,0 +1,7 @@
+name: Subman
+version: 1.0.0
+main: ua.timurrte.subman.SubmanPlugin
+description: Subman plugin for PaperMC
+author: timurrte
+website: https://github.com/timurrte
+api-version: '26.2'
