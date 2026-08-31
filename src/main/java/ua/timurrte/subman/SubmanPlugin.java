@@ -7,9 +7,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import ua.timurrte.subman.commands.CommandManager;
+import ua.timurrte.subman.commands.CraftCommand;
 import ua.timurrte.subman.commands.FactionCommand;
+import ua.timurrte.subman.commands.GiveFactionItemCommand;
 import ua.timurrte.subman.commands.ShopCommand;
 import ua.timurrte.subman.listeners.ChatListener;
+import ua.timurrte.subman.listeners.FactionItemListener;
 import ua.timurrte.subman.listeners.PlayerJoinListener;
 
 public class SubmanPlugin extends JavaPlugin implements Listener {
@@ -22,6 +25,7 @@ public class SubmanPlugin extends JavaPlugin implements Listener {
 	
     Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(), this);
     Bukkit.getPluginManager().registerEvents(new ChatListener(), this);
+    Bukkit.getPluginManager().registerEvents(new FactionItemListener(this), this);
     
     CommandManager.register(
             "shop", 
@@ -33,9 +37,21 @@ public class SubmanPlugin extends JavaPlugin implements Listener {
     CommandManager.register(
             "faction", 
             FactionCommand::new, 
-            "Opens the factions menu", 
-            List.of()
+            "Opens the factions menu"
         );
+    
+    CommandManager.register(
+    		"givefactionitem", 
+    		GiveFactionItemCommand::new, 
+    		"Give a player faction item"
+    	);
+    
+    CommandManager.register(
+    		"craft", 
+    		CraftCommand::new, 
+    		"Open crafting menu"
+    	);
+    
   }
   
   public static SubmanPlugin getInstance() {

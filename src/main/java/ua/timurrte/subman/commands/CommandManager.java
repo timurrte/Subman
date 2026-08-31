@@ -3,10 +3,6 @@ package ua.timurrte.subman.commands;
 import java.util.List;
 import java.util.function.Function;
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-
-import io.papermc.paper.command.brigadier.CommandSourceStack;
-import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import ua.timurrte.subman.SubmanPlugin;
 
@@ -36,4 +32,12 @@ public class CommandManager<T extends CommandHandler> {
 	    			);
 	    });
 	}
+    
+    public static <T extends CommandHandler> void register(
+    		String rootCommand,
+    		Function<String, T> commandFactory,
+    		String description)
+    {
+    	register(rootCommand, commandFactory, description, List.of());
+    }
 }
