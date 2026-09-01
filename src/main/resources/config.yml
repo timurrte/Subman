@@ -1,0 +1,33 @@
+valkyrie_sword:
+  material: GOLDEN_SWORD
+  name: "Valkyrie Sword"
+  rarity: "LEGENDARY"
+  type: "WEAPON"
+  unbreakable: true
+  attributes:
+    ATTACK_DAMAGE: 12.0
+  lore:
+    - "§7A legendary blade forged"
+    - "§7for the §eWarriors§7 faction."
+    - ""
+    - "§8⚡ §7Exclusive Faction Item"
+
+staff_of_dirt:
+  material: STICK
+  name: "§2Staff of Dirt"
+  rarity: "RARE"
+  type: "WEAPON"
+  lore:
+    - "§7Unleashes a wave of earth"
+    - "§7around the caster."
+    - ""
+    - "§8⚡ §7Exclusive Faction Item"
+
+magic_dust:
+  material: SUGAR
+  name: "§bMagic Dust"
+  rarity: "UNCOMMON"
+  type: "INGREDIENT"
+  lore:
+    - "§7Used as a core crafting ingredient"
+    - "§7for magical wizard items."
