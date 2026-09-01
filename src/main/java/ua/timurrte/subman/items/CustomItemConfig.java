@@ -3,6 +3,8 @@ package ua.timurrte.subman.items;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.inventory.meta.components.UseCooldownComponent;
+
 public class CustomItemConfig {
     private final String id;
     private final String materialName;
@@ -12,14 +14,16 @@ public class CustomItemConfig {
     private final boolean unbreakable;
     private final Map<String, Double> attributes;
     private final List<String> lore;
+    private final UseCooldownComponent cooldown;
 
     public CustomItemConfig(String id, String materialName, String name, String rarity, String type, 
-                            boolean unbreakable, Map<String, Double> attributes, List<String> lore) {
+                            UseCooldownComponent cooldown, boolean unbreakable, Map<String, Double> attributes, List<String> lore) {
         this.id = id;
         this.materialName = materialName;
         this.name = name;
         this.rarity = rarity;
         this.type = type;
+        this.cooldown = cooldown;
         this.unbreakable = unbreakable;
         this.attributes = attributes;
         this.lore = lore;

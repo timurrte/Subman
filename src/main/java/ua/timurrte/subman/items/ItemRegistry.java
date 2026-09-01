@@ -1,7 +1,9 @@
 package ua.timurrte.subman.items;
 
 import org.bukkit.Material;
+
 import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.configuration.ConfigurationSection;
@@ -17,6 +19,7 @@ import net.kyori.adventure.text.Component;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ItemRegistry {
@@ -70,28 +73,38 @@ public class ItemRegistry {
         ItemStack item = new ItemStack(mat);
         ItemMeta meta = item.getItemMeta();
 
-        // Display Name
         meta.displayName(Component.text(config.getName()));
 
-        // Unbreakable
         if (config.isUnbreakable()) {
             meta.setUnbreakable(true);
             meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
         }
+        
+        meta.setUseCooldown(config.getCooldown());
 
-        // Attributes (like damage)
+        // Attributes parsing
         if (config.getAttributes() != null) {
             for (Map.Entry<String, Double> entry : config.getAttributes().entrySet()) {
                 try {
-                    Attribute attr = Attribute.valueOf(entry.getKey());
-                    NamespacedKey key = new NamespacedKey(plugin, "mod_" + entry.getKey().toLowerCase());
-                    AttributeModifier modifier = new AttributeModifier(key, entry.getValue(), AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.MAINHAND);
+                    String rawKey = entry.getKey().toLowerCase();
+                    NamespacedKey attrKey= NamespacedKey.fromString(rawKey.contains(":") ? rawKey : "minecraft:" + rawKey);
+                    if (attrKey == null) continue;
+                    Attribute attr = Registry.ATTRIBUTE.get(attrKey);
+                    if (attr == null) continue;
+                    
+                    NamespacedKey modKey = new NamespacedKey(plugin, "mod_" + attrKey.getKey().replace('/', '_'));
+                    AttributeModifier modifier = new AttributeModifier(
+                            modKey, 
+                            entry.getValue(), 
+                            AttributeModifier.Operation.ADD_NUMBER, 
+                            EquipmentSlotGroup.MAINHAND
+                    );
+                    
                     meta.addAttributeModifier(attr, modifier);
                 } catch (IllegalArgumentException ignored) {}
             }
         }
 
-        // Lore formatting (Adding Hypixel-style Rarity footer automatically)
         List<Component> formattedLore = config.getLore().stream()
             .map(Component::text)
             .collect(Collectors.toList());
@@ -100,7 +113,7 @@ public class ItemRegistry {
         formattedLore.add(Component.text(getRarityFormatted(config.getRarity()) + " " + config.getType()));
         meta.lore(formattedLore);
 
-        // PDC Identifier tag so your plugin knows *what* custom item this is instantly
+        // PDC Identifier tag
         meta.getPersistentDataContainer().set(itemIdKey, PersistentDataType.STRING, config.getId());
 
         item.setItemMeta(meta);
@@ -121,5 +134,9 @@ public class ItemRegistry {
         if (item == null || !item.hasItemMeta()) return null;
         NamespacedKey key = new NamespacedKey(plugin, "custom_item_id");
         return item.getItemMeta().getPersistentDataContainer().get(key, PersistentDataType.STRING);
+    }
+    
+    public static Set<String> getRegisteredItemIds() {
+        return itemConfigs.keySet();
     }
 }

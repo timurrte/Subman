@@ -26,7 +26,7 @@ public abstract class CraftingMenu {
 					
 					outputInventory.setGuiPriority(-1);
 					
-					craftingGrid.addPostUpdateHandler(event -> {
+					craftingGrid.addPostUpdateHandler(_ -> {
 					    List<ItemStack> items = new ArrayList<>();
 					    for (int i = 0; i < craftingGrid.getSize(); i++) {
 					        items.add(craftingGrid.getItem(i));
@@ -35,7 +35,7 @@ public abstract class CraftingMenu {
 					    outputInventory.setItem(UpdateReason.SUPPRESSED , 0, result);
 					});
 					
-					outputInventory.addPostUpdateHandler(event -> {
+					outputInventory.addPostUpdateHandler(_ -> {
 					    for (int i = 0; i < craftingGrid.getSize(); i++) {
                             craftingGrid.setItem(UpdateReason.SUPPRESSED, i, ItemStack.of(Material.AIR));
                         }
