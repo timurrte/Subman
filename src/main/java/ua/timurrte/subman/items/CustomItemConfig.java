@@ -11,19 +11,22 @@ public class CustomItemConfig {
     private final String name;
     private final String rarity;
     private final String type;
+    private final float cooldownSeconds;
+    private final String cooldownGroup;
     private final boolean unbreakable;
     private final Map<String, Double> attributes;
     private final List<String> lore;
-    private final UseCooldownComponent cooldown;
+
 
     public CustomItemConfig(String id, String materialName, String name, String rarity, String type, 
-                            UseCooldownComponent cooldown, boolean unbreakable, Map<String, Double> attributes, List<String> lore) {
+                            float cooldownSeconds, String cooldownGroup, boolean unbreakable, Map<String, Double> attributes, List<String> lore) {
         this.id = id;
         this.materialName = materialName;
         this.name = name;
         this.rarity = rarity;
         this.type = type;
-        this.cooldown = cooldown;
+        this.cooldownSeconds = cooldownSeconds;
+        this.cooldownGroup = cooldownGroup;
         this.unbreakable = unbreakable;
         this.attributes = attributes;
         this.lore = lore;
@@ -33,6 +36,8 @@ public class CustomItemConfig {
     public String getMaterialName() { return materialName; }
     public String getName() { return name; }
     public String getRarity() { return rarity; }
+    public float getCooldownSeconds() { return cooldownSeconds; }
+    public String getCooldownGroup() { return cooldownGroup; }
     public String getType() { return type; }
     public boolean isUnbreakable() { return unbreakable; }
     public Map<String, Double> getAttributes() { return attributes; }

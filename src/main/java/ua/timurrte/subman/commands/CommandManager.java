@@ -11,7 +11,7 @@ public class CommandManager<T extends CommandHandler> {
 	/**
      * Registers any command class that implements CommandHandler.
      * 
-     * @param rootCommand The primary name of the command (e.g., "shop")
+     * @param rootCommand The primary name of the command (e.g., "shop" woulrd be "/shop")
      * @param commandFactory A reference to the constructor of the command handler that implements CommandHandler, e.g., ShopCommand::new
      * @param description Description of the command
      * @param aliases Optional command aliases

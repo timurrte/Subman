@@ -12,6 +12,7 @@ import org.bukkit.inventory.EquipmentSlotGroup;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.components.UseCooldownComponent;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 import net.kyori.adventure.text.Component;
@@ -46,6 +47,10 @@ public class ItemRegistry {
             String name = itemSec.getString("name", "Custom Item");
             String rarity = itemSec.getString("rarity", "COMMON");
             String type = itemSec.getString("type", "ITEM");
+
+            float cooldownSeconds = (float) itemSec.getDouble("cooldown", 0.0);
+            String cooldownGroup = itemSec.getString("cooldownGroup", "subman:default_cooldown");
+
             boolean unbreakable = itemSec.getBoolean("unbreakable", false);
             
             Map<String, Double> attributes = new HashMap<>();
@@ -58,7 +63,7 @@ public class ItemRegistry {
 
             List<String> lore = itemSec.getStringList("lore");
 
-            CustomItemConfig customItem = new CustomItemConfig(key, material, name, rarity, type, unbreakable, attributes, lore);
+            CustomItemConfig customItem = new CustomItemConfig(key, material, name, rarity, type, cooldownSeconds, cooldownGroup, unbreakable, attributes, lore);
             itemConfigs.put(key, customItem);
         }
     }
@@ -79,8 +84,17 @@ public class ItemRegistry {
             meta.setUnbreakable(true);
             meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
         }
-        
-        meta.setUseCooldown(config.getCooldown());
+
+        if (config.getCooldownSeconds() > 0) {
+            UseCooldownComponent cooldownComponent = meta.getUseCooldown();
+            cooldownComponent.setCooldownSeconds(config.getCooldownSeconds());
+
+            NamespacedKey groupKey = NamespacedKey.fromString(config.getCooldownGroup());
+            if (groupKey != null) {
+                cooldownComponent.setCooldownGroup(groupKey);
+            }
+            meta.setUseCooldown(cooldownComponent);
+        }
 
         // Attributes parsing
         if (config.getAttributes() != null) {

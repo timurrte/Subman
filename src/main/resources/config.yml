@@ -3,6 +3,8 @@ valkyrie_sword:
   name: "Valkyrie Sword"
   rarity: "LEGENDARY"
   type: "WEAPON"
+  cooldown: 1.0
+  cooldown_group: "subman:sword_cooldown"
   unbreakable: true
   attributes:
     ATTACK_DAMAGE: 12.0
