@@ -1,0 +1,43 @@
+# Define your reusable equipment pieces here
+ruby_helmet:
+  material: LEATHER_HELMET
+  name: "<red><bold>Ruby Helmet"
+  color: [255, 0, 0] # RGB values for dyeing leather armor
+  unbreakable: true
+  custom_model_data: 1001
+  attributes:
+    max_health: 4.0
+    armor: 3.0
+  lore:
+    - "<gray>A helmet forged from"
+    - "<gray>crystallized rubies."
+
+ruby_chestplate:
+  material: LEATHER_CHESTPLATE
+  name: "<red><bold>Ruby Chestplate"
+  color: [255, 0, 0]
+  unbreakable: true
+  custom_model_data: 1001
+  attributes:
+    max_health: 8.0
+    armor: 8.0
+    armor_toughness: 2.0
+  lore:
+    - "<gray>A sturdy ruby-infused chestplate."
+
+ruby_leggings:
+  material: LEATHER_LEGGINGS
+  name: "<red><bold>Ruby Leggings"
+  color: [255, 0, 0]
+  unbreakable: true
+  attributes:
+    armor: 6.0
+
+ruby_boots:
+  material: LEATHER_BOOTS
+  name: "<red><bold>Ruby Boots"
+  color: [255, 0, 0]
+  unbreakable: true
+  attributes:
+    armor: 3.0
+    movement_speed: 0.05

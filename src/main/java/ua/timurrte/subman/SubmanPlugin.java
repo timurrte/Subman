@@ -10,11 +10,15 @@ import ua.timurrte.subman.commands.CraftCommand;
 import ua.timurrte.subman.commands.FactionCommand;
 import ua.timurrte.subman.commands.GiveCustomItemCommand;
 import ua.timurrte.subman.commands.ShopCommand;
+import ua.timurrte.subman.commands.SpawnMobCommand;
+import ua.timurrte.subman.items.EquipmentRegistry;
 import ua.timurrte.subman.items.ItemRegistry;
 import ua.timurrte.subman.commands.CommandManager;
 import ua.timurrte.subman.listeners.ChatListener;
 import ua.timurrte.subman.listeners.FactionItemListener;
+import ua.timurrte.subman.listeners.MobHealthListener;
 import ua.timurrte.subman.listeners.PlayerJoinListener;
+import ua.timurrte.subman.mobs.MobRegistry;
 
 public class SubmanPlugin extends JavaPlugin implements Listener {
 	
@@ -25,6 +29,8 @@ public class SubmanPlugin extends JavaPlugin implements Listener {
 	instance = this;
 	
     ItemRegistry.init(this);
+    EquipmentRegistry.init(this);
+    MobRegistry.init(this);
 	
     Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(), this);
     Bukkit.getPluginManager().registerEvents(new ChatListener(), this);
@@ -54,6 +60,10 @@ public class SubmanPlugin extends JavaPlugin implements Listener {
     		CraftCommand::new, 
     		"Open crafting menu"
     	);
+    CommandManager.register(
+            "spawnmob",
+            SpawnMobCommand::new,
+            "Spawn a mob at player's location");
   }
   
   public static SubmanPlugin getInstance() {

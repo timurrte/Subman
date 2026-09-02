@@ -1,0 +1,35 @@
+valkyrie_sword:
+  material: GOLDEN_SWORD
+  name: "Valkyrie Sword"
+  rarity: "LEGENDARY"
+  type: "WEAPON"
+  cooldown: 0.1
+  cooldownGroup: "subman:sword_cooldown"
+  unbreakable: true
+  attributes:
+    ATTACK_DAMAGE: 12.0
+  lore:
+    - "<gray>A legendary blade forged"
+    - "<gray>for the <yellow>Warriors</yellow> faction."
+    - ""
+    - "<dark_gray>⚡ <gray>Exclusive Faction Item"
+
+staff_of_dirt:
+  material: STICK
+  name: "§2Staff of Dirt"
+  rarity: "RARE"
+  type: "WEAPON"
+  lore:
+    - "<gray>Unleashes a wave of earth"
+    - "<gray>around the caster."
+    - ""
+    - "<dark_gray>⚡ <gray>Exclusive Faction Item"
+
+magic_dust:
+  material: SUGAR
+  name: "§bMagic Dust"
+  rarity: "UNCOMMON"
+  type: "INGREDIENT"
+  lore:
+    - "<gray>Used as a core crafting ingredient"
+    - "<gray>for magical wizard items."

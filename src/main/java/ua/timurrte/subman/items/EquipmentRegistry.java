@@ -1,12 +1,11 @@
 package ua.timurrte.subman.items;
 
+import org.bukkit.Color;
 import org.bukkit.Material;
-
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
-import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -14,11 +13,12 @@ import org.bukkit.inventory.EquipmentSlotGroup;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.components.UseCooldownComponent;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import ua.timurrte.subman.SubmanPlugin;
 
 import java.io.File;
 import java.util.HashMap;
@@ -27,27 +27,27 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ItemRegistry {
-    private static final Map<String, CustomItemConfig> itemConfigs = new HashMap<>();
-    private static NamespacedKey itemIdKey;
+public class EquipmentRegistry {
+    public static String EQUIPMENT_FILE = "equipment.yml";
+    private static final Map<String, CustomEquipmentConfig> equipmentConfigs = new HashMap<>();
+    private static NamespacedKey pieceIdKey;
 
     public static void init(Plugin plugin) {
-        itemIdKey = new NamespacedKey(plugin, "custom_item_id");
+        pieceIdKey = new NamespacedKey(plugin, "custom_equipment_id");
         if (!plugin.getDataFolder().exists()) {
             plugin.getDataFolder().mkdirs();
         }
         
-        File itemsFile = new File(plugin.getDataFolder(), "items.yml");
-        if (!itemsFile.exists()) {
-            plugin.saveResource("items.yml", false);
+        File equipmentFile = new File(plugin.getDataFolder(), EQUIPMENT_FILE);
+        if (!equipmentFile.exists()) {
+            plugin.saveResource(EQUIPMENT_FILE, false);
         }
-        FileConfiguration itemsConfig = YamlConfiguration.loadConfiguration(itemsFile);
-        loadItems(itemsConfig);
-        
+        FileConfiguration equipmentConfig = YamlConfiguration.loadConfiguration(equipmentFile);
+        loadEquipment(equipmentConfig);
     }
 
-    public static void loadItems(FileConfiguration config) {
-        itemConfigs.clear();
+    public static void loadEquipment(FileConfiguration config) {
+        equipmentConfigs.clear();
         ConfigurationSection section = config.getConfigurationSection("");
         if (section == null) return;
 
@@ -55,15 +55,16 @@ public class ItemRegistry {
             ConfigurationSection itemSec = section.getConfigurationSection(key);
             if (itemSec == null) continue;
 
-            String material = itemSec.getString("material", "STONE");
             String name = itemSec.getString("name", "Custom Item");
+            String material = itemSec.getString("material", "LEATHER_HELMET");
             String rarity = itemSec.getString("rarity", "COMMON");
-            String type = itemSec.getString("type", "ITEM");
+            String type = itemSec.getString("type", "ARMOR");
 
             float cooldownSeconds = (float) itemSec.getDouble("cooldown", 0.0);
             String cooldownGroup = itemSec.getString("cooldownGroup", "subman:default_cooldown");
 
             boolean unbreakable = itemSec.getBoolean("unbreakable", false);
+            List<Integer> colorRgb = itemSec.getIntegerList("color");
             
             Map<String, Double> attributes = new HashMap<>();
             if (itemSec.isConfigurationSection("attributes")) {
@@ -75,47 +76,47 @@ public class ItemRegistry {
 
             List<String> lore = itemSec.getStringList("lore");
 
-            CustomItemConfig customItem = new CustomItemConfig(key, material, name, rarity, type, cooldownSeconds, cooldownGroup, unbreakable, attributes, lore);
-            itemConfigs.put(key, customItem);
+            CustomEquipmentConfig customItem = new CustomEquipmentConfig(
+                key, name, material, rarity, type, cooldownSeconds, cooldownGroup, 
+                unbreakable, colorRgb, attributes, lore
+            );
+            equipmentConfigs.put(key, customItem);
         }
     }
 
     public static ItemStack buildItem(String id, Plugin plugin) {
-        CustomItemConfig config = itemConfigs.get(id);
+        CustomEquipmentConfig config = equipmentConfigs.get(id);
         MiniMessage mm = MiniMessage.miniMessage();
         
         if (config == null) return null;
 
         Material mat = Material.matchMaterial(config.getMaterialName());
-        if (mat == null) mat = Material.STONE;
+        if (mat == null) {
+            SubmanPlugin.getInstance().getComponentLogger().error(Component.text("Material cannot be null for equipment: " + id));
+            mat = Material.LEATHER_HELMET;
+        }
 
         ItemStack item = new ItemStack(mat);
         ItemMeta meta = item.getItemMeta();
 
-        meta.displayName(Component.text(config.getName()));
+        meta.displayName(mm.deserialize(config.getName()));
 
         if (config.isUnbreakable()) {
             meta.setUnbreakable(true);
             meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
         }
 
-        if (config.getCooldownSeconds() > 0) {
-            UseCooldownComponent cooldownComponent = meta.getUseCooldown();
-            cooldownComponent.setCooldownSeconds(config.getCooldownSeconds());
-
-            NamespacedKey groupKey = NamespacedKey.fromString(config.getCooldownGroup());
-            if (groupKey != null) {
-                cooldownComponent.setCooldownGroup(groupKey);
-            }
-            meta.setUseCooldown(cooldownComponent);
+        // Apply Dye Color for Leather Armor
+        if (meta instanceof LeatherArmorMeta leatherMeta && config.getColorRgb() != null && config.getColorRgb().size() >= 3) {
+            leatherMeta.setColor(Color.fromRGB(config.getColorRgb().get(0), config.getColorRgb().get(1), config.getColorRgb().get(2)));
         }
 
-        // Attributes parsing
+        // Attributes parsing (Applied generally to any armor slot)
         if (config.getAttributes() != null) {
             for (Map.Entry<String, Double> entry : config.getAttributes().entrySet()) {
                 try {
                     String rawKey = entry.getKey().toLowerCase();
-                    NamespacedKey attrKey= NamespacedKey.fromString(rawKey.contains(":") ? rawKey : "minecraft:" + rawKey);
+                    NamespacedKey attrKey = NamespacedKey.fromString(rawKey.contains(":") ? rawKey : "minecraft:" + rawKey);
                     if (attrKey == null) continue;
                     Attribute attr = Registry.ATTRIBUTE.get(attrKey);
                     if (attr == null) continue;
@@ -125,7 +126,7 @@ public class ItemRegistry {
                             modKey, 
                             entry.getValue(), 
                             AttributeModifier.Operation.ADD_NUMBER, 
-                            EquipmentSlotGroup.MAINHAND
+                            EquipmentSlotGroup.ANY
                     );
                     
                     meta.addAttributeModifier(attr, modifier);
@@ -141,8 +142,7 @@ public class ItemRegistry {
         formattedLore.add(mm.deserialize(getRarityFormatted(config.getRarity()) + " " + config.getType()));
         meta.lore(formattedLore);
 
-        // PDC Identifier tag
-        meta.getPersistentDataContainer().set(itemIdKey, PersistentDataType.STRING, config.getId());
+        meta.getPersistentDataContainer().set(pieceIdKey, PersistentDataType.STRING, config.getId());
 
         item.setItemMeta(meta);
         return item;
@@ -150,28 +150,27 @@ public class ItemRegistry {
 
     private static String getRarityFormatted(String rarity) {
         return switch (rarity.toUpperCase()) {
-            case "UNCOMMON" -> "<green><bold>UNCOMMON";
-            case "RARE" -> "<blue><bold>RARE";
-            case "EPIC" -> "<dark_purple><bold>EPIC";
-            case "LEGENDARY" -> "<gold><bold>LEGENDARY";
-            default -> "<white><bold>COMMON";
+            case "UNCOMMON" -> "<green><bold>UNCOMMON</bold></green>";
+            case "RARE" -> "<blue><bold>RARE</bold></blue>";
+            case "EPIC" -> "<dark_purple><bold>EPIC</bold></dark_purple>";
+            case "LEGENDARY" -> "<gold><bold>LEGENDARY</bold></gold>";
+            default -> "<white><bold>COMMON</bold></white>";
         };
     }
 
     public static String getCustomId(ItemStack item, Plugin plugin) {
         if (item == null || !item.hasItemMeta()) return null;
-        NamespacedKey key = new NamespacedKey(plugin, "custom_item_id");
-        return item.getItemMeta().getPersistentDataContainer().get(key, PersistentDataType.STRING);
+        return item.getItemMeta().getPersistentDataContainer().get(pieceIdKey, PersistentDataType.STRING);
     }
     
     public static boolean isExistsInRegistry(String itemId) {
-        if (itemConfigs.containsKey(itemId)) {
+        if (equipmentConfigs.containsKey(itemId)) {
             return true;
         }
         return false;
     }
     
     public static Set<String> getRegisteredItemIds() {
-        return itemConfigs.keySet();
+        return equipmentConfigs.keySet();
     }
 }

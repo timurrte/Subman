@@ -1,0 +1,14 @@
+ghoul:
+  name: "Ghoul"
+  level: 5
+  attributes:
+    max_health: 40.0
+    attack_damage: 6.0
+    movement_speed: 0.3
+  model: "zombie"
+  armor: null
+  weapon: "iron_sword"
+  biomes:
+    - "plains"
+    - "forest"
+  light_level: 0
