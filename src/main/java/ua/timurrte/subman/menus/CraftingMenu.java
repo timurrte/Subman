@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import ua.timurrte.subman.crafting.Craft;
 import ua.timurrte.subman.crafting.CraftManager;
 import xyz.xenondevs.invui.gui.Gui;
 import xyz.xenondevs.invui.inventory.VirtualInventory;
@@ -36,9 +37,27 @@ public abstract class CraftingMenu {
 					});
 					
 					outputInventory.addPostUpdateHandler(_ -> {
+					    List<ItemStack> currentGrid = getGridItems(craftingGrid);
+					    Craft craft = CraftManager.findMatchingCraft(currentGrid);
+					    if (craft == null) return;
+
+					    List<ItemStack> requiredGrid = craft.getGrid();
 					    for (int i = 0; i < craftingGrid.getSize(); i++) {
-                            craftingGrid.setItem(UpdateReason.SUPPRESSED, i, ItemStack.of(Material.AIR));
-                        }
+					        ItemStack required = requiredGrid.get(i);
+					        ItemStack actual = currentGrid.get(i);
+					        if (required == null || actual == null) continue;
+
+					        int remaining = actual.getAmount() - required.getAmount();
+					        if (remaining <= 0) {
+					            craftingGrid.setItem(UpdateReason.SUPPRESSED, i, ItemStack.of(Material.AIR));
+					        } else {
+					            actual.setAmount(remaining);
+					            craftingGrid.setItem(UpdateReason.SUPPRESSED, i, actual);
+					        }
+					    }
+
+					    outputInventory.setItem(UpdateReason.SUPPRESSED, 0,
+					        CraftManager.findMatchingResult(getGridItems(craftingGrid)));
                     });
 					
 					var gui = Gui.builder()
@@ -69,5 +88,13 @@ public abstract class CraftingMenu {
 
 					window.open();
 					return 1;
+	}
+
+	private static List<ItemStack> getGridItems(VirtualInventory craftingGrid) {
+		List<ItemStack> items = new ArrayList<>();
+		for (int i = 0; i < craftingGrid.getSize(); i++) {
+			items.add(craftingGrid.getItem(i));
+		}
+		return items;
 	}
 }

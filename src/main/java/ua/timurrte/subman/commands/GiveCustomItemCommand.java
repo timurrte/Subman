@@ -1,6 +1,8 @@
 package ua.timurrte.subman.commands;
 
-import org.bukkit.entity.Player;import net.kyori.adventure.text.minimessage.MiniMessage;
+import java.util.stream.Stream;
+
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
@@ -30,12 +32,14 @@ public class GiveCustomItemCommand implements CommandHandler {
         this.node = Commands.literal(rootCommand)
                 .then(Commands.argument("itemId", StringArgumentType.word())
                         .suggests((context, builder) -> {
-                            for (String id : ItemRegistry.getRegisteredItemIds()) {
-                                builder.suggest(id);
-                            }
-                            for (String id: EquipmentRegistry.getRegisteredItemIds()) {
-                                builder.suggest(id);
-                            }
+                            String typed = builder.getRemainingLowerCase();
+                            Stream.concat(
+                                    ItemRegistry.getRegisteredItemIds().stream(),
+                                    EquipmentRegistry.getRegisteredItemIds().stream())
+                                .filter(id -> id.regionMatches(true, 0, typed, 0, typed.length()))
+                                .distinct()
+                                .sorted()
+                                .forEach(builder::suggest);
                             return builder.buildFuture();
                         })
                         .executes(ctx -> {

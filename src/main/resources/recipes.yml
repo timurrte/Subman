@@ -1,0 +1,18 @@
+# Every recipe is a fixed 3x3 pattern. A space means an empty slot.
+# `item` accepts either a Minecraft material (for example DIAMOND) or an ID
+# from items.yml (for example magic_dust). Amount defaults to 1.
+valkyrie_sword:
+  shape:
+    - " D "
+    - " M "
+    - " S "
+  ingredients:
+    D:
+      item: DIAMOND
+    M:
+      item: magic_dust
+      amount: 2
+    S:
+      item: STICK
+  result:
+    item: valkyrie_sword

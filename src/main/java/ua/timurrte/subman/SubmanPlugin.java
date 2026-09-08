@@ -11,12 +11,12 @@ import ua.timurrte.subman.commands.FactionCommand;
 import ua.timurrte.subman.commands.GiveCustomItemCommand;
 import ua.timurrte.subman.commands.ShopCommand;
 import ua.timurrte.subman.commands.SpawnMobCommand;
+import ua.timurrte.subman.crafting.CraftManager;
 import ua.timurrte.subman.items.EquipmentRegistry;
 import ua.timurrte.subman.items.ItemRegistry;
 import ua.timurrte.subman.commands.CommandManager;
 import ua.timurrte.subman.listeners.ChatListener;
 import ua.timurrte.subman.listeners.FactionItemListener;
-import ua.timurrte.subman.listeners.MobHealthListener;
 import ua.timurrte.subman.listeners.PlayerJoinListener;
 import ua.timurrte.subman.mobs.MobRegistry;
 
@@ -31,6 +31,7 @@ public class SubmanPlugin extends JavaPlugin implements Listener {
     ItemRegistry.init(this);
     EquipmentRegistry.init(this);
     MobRegistry.init(this);
+    CraftManager.init(this);
 	
     Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(), this);
     Bukkit.getPluginManager().registerEvents(new ChatListener(), this);
